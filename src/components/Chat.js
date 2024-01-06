@@ -1,44 +1,23 @@
 import React, { useState } from 'react'
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { RiChatVoiceFill } from 'react-icons/ri'
 import { FaCircleUser } from "react-icons/fa6";
 import { IoSend } from "react-icons/io5";
-import { MdKeyboardVoice } from "react-icons/md";
+import useClipboard from "react-use-clipboard";
 // import { sendMsgToOpenAI } from '../openai'
+import Navbar from './Navbar'
 import { IoCopy } from "react-icons/io5";
-import { AiTwotoneEdit } from "react-icons/ai";
 import axios from 'axios';
+import { FaGithubSquare } from 'react-icons/fa';
 const Chat = () => {
-    // const API_KEY = "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";
-    // const options = {
-    //     method: 'POST',
-    //     url: 'https://api.openai.com/v1/engines/davinci/completions',
-    //     headers: {
-    //         'Content-Type': 'application/json',
-    //         'Authorization': "Bearer " + API_KEY,
-    //     },
-
-    //     data: {
-    //         messages: [
-    //             {
-    //                 role: 'user',
-    //                 content: 'Hello!'
-    //             },
-    //             {
-    //                 role: 'assistant',
-    //                 content: 'Hello there! How may I assist you today?'
-    //             },
-    //             {
-    //                 role: 'user',
-    //                 content: 'That is very cool! Tell me more.'
-    //             }
-    //         ],
-    //         temperature: 1
-    //     }
-    // };
     const [inputText, setInputText] = useState('');
     const [response, setResponse] = useState('');
     const [typing, setTyping] = useState(false);
     const [prompt, setprompt] = useState("");
+    const [texttocopy, setTexttocopy] = useState("");
+    // eslint-disable-next-line
+    const [isCopied, setCopied] = useClipboard(texttocopy);
     const encodedParams = new URLSearchParams();
     encodedParams.set('in', inputText);
     encodedParams.set('op', 'in');
@@ -48,7 +27,7 @@ const Chat = () => {
     encodedParams.set('key', 'RHMN5hnQ4wTYZBGCF3dfxzypt68rVP');
     encodedParams.set('ChatSource', 'RapidAPI');
     encodedParams.set('duration', '1');
-
+    const notify = () => toast("Text copied!");
     const options = {
         method: 'POST',
         url: 'https://robomatic-ai.p.rapidapi.com/api',
@@ -60,41 +39,28 @@ const Chat = () => {
         data: encodedParams,
     };
 
+
+
+    const handleCopy = () => {
+        setTexttocopy(response);
+        setCopied(response);
+        notify();
+    }
+
     const handleInputChange = (e) => {
+       
         setInputText(e.target.value);
     };
-    const handleSendRequest = async () => {
-        // try {
-        //   const response = await fetch('https://api.openai.com/v1/engines/davinci/completions', {
-        //     method: 'POST',
-        //     headers: {
-        //       'Content-Type': 'application/json',
-        //       'Authorization': "Bearer " + API_KEY,
-        //     },
-        //     body: JSON.stringify({
-        //       prompt: inputText,
-        //       max_tokens: 150, // Adjust based on your needs
-        //     }),
-        //   });
-
-        //   const data = await response.json();
-        //   setResponse(data.choices[0].text.trim());
-        // } catch (error) {
-        //   console.error('Error sending request to OpenAI API:', error);
-        // }
-        // try {
-        //     const response = await axios.request(options);
-        //     setResponse(response.data.content);
-        // } catch (error) {
-        //     console.error(error);
-        // }
+    const handleSendRequest = async (e) => {
+        
+        e.preventDefault();
         try {
             setprompt(inputText);
             setTyping(true);
             const response = await axios.request(options);
+            setInputText("");
             setTyping(false);
             console.log(response.data.out);
-            setInputText("");
             setResponse(response.data.out);
         } catch (error) {
             console.error(error);
@@ -102,10 +68,15 @@ const Chat = () => {
     };
     return (
         <div class="flex">
+            
             <div class="md:w-5/12 lg:inline md:inline hidden h-screen border-r-2 border-r-gray-700">
                 <div className='m-5 flex flex-row gap-1'>
                     <RiChatVoiceFill className='h-10 text-4xl' />
-                    <h2 className='text-3xl'>VoiceGPT</h2>
+                    <h2 className='text-3xl'>Robomatic.ai</h2>
+                    <a href="https://github.com/dipayansarkar47/ai-chatbot" className='ml-auto text-3xl flex justify-end items-center' target='_blank' rel='noreferrer'>
+
+                        <FaGithubSquare />
+                    </a>
                 </div>
                 <div className='flex flex-col justify-center mx-5'>
                     <button type="button" className='text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2'> + New Conversation</button>
@@ -119,6 +90,7 @@ const Chat = () => {
                 </div>
             </div>
             <div class="w-full bg-transparent h-screen flex flex-col justify-start items-start">
+                <Navbar className=''></Navbar>
                 <div className='flex flex-col lg:pt-16 mb-16  gap-1 w-full'>
                     <div className="chats m-5 bg-blue-950 border-2 border-blue-700 rounded-sm">
 
@@ -126,52 +98,43 @@ const Chat = () => {
                             <RiChatVoiceFill className='text-3xl bg-transparent' />
                             <p className='w-fit bg-transparent'>Hey! I'm your ChatBot. How can I assist you?</p>
                         </div>
-                        <div className='flex flex-row justify-end items-end gap-2 m-2 bg-blue-950'>
-
-                            <IoCopy className='flex flex-row ml-auto bg-transparent' />
-                            <AiTwotoneEdit className='bg-transparent' />
-                        </div>
                     </div>
                     {prompt && <div className="chats m-5  border-2 border-gray-700 rounded-sm">
                         <div className="chat flex flex-row items-center gap-2 p-5 ">
                             <FaCircleUser className='text-3xl' />
                             <p className="">{prompt}</p>
                         </div>
-                        <div className='flex flex-row justify-end items-end gap-2 m-2 bg-gray-00'>
-
-                            <IoCopy className='flex flex-row ml-auto bg-transparent' />
-                            <AiTwotoneEdit className='bg-transparent' />
-                        </div>
+                        
 
                     </div>}
                     {prompt && <div className="chats m-5 bg-blue-950 border-2 border-blue-700 rounded-sm">
 
-                        <div className="chat bg-blue-950 flex flex-row gap-2 p-5">
+                        <div className="chat ease-in bg-blue-950 flex flex-row gap-2 p-5">
                             <RiChatVoiceFill className='text-3xl bg-transparent' />
                             {typing && (<p className='w-fit bg-transparent'>Typing...</p>)}
                             {response && (<p className="txt w-fit bg-transparent">
                                 {response}
                             </p>)}
                         </div>
-                        <div className='flex flex-row justify-end items-end gap-2 m-2 bg-blue-950'>
+                        <div className='flex flex-row justify-center items-center gap-2 p-2 bg-blue-950'>
 
-                            <IoCopy className='flex flex-row ml-auto bg-transparent' />
-                            <AiTwotoneEdit className='bg-transparent' />
+                            <IoCopy className='flex flex-row ml-auto bg-transparent' onClick={handleCopy} />
+                            {<p className='bg-transparent items-center justify-center'>{isCopied ? "Copied" : ""}</p>}
                         </div>
                     </div>}
                 </div>
-                <div className="chatFooter m-5 p-2 mx-2 w-11/12 bg-transparent rounded flex flex-col justify-center items-center mt-auto">
-                    <div className="flex flex-row gap-3 w-10/12 bg-transparent">
+                <div className="chatFooter mb-16 p-2 mx-2 w-11/12 bg-transparent rounded flex flex-col justify-center items-center mt-auto">
+                    <div className="flex flex-row gap-3 w-11/12 bg-transparent">
+                        <form action="" className='flex flex-row w-full gap-2' onSubmit={handleSendRequest}>
+
                         <input
                             className='bg-gray-100 border border-gray-300 outline-none bg-transparent text-gray-900 text-sm rounded-lg  block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-white dark:text-white '
-                            type="text" placeholder='Type or Speak your query...' name="" id="" value={inputText}
-                            onChange={handleInputChange} />
-                        <button type="button">
-                            <MdKeyboardVoice className='text-3xl bg-transparent' />
-                        </button>
-                        <button onClick={handleSendRequest}>
+                            type="text" placeholder='Type your query to me...' name="" id="" value={inputText} onChange={handleInputChange}
+                             />
+                        <button type='submit' >
                             <IoSend className='text-2xl bg-transparent' />
                         </button>
+                        </form>
                     </div>
                 </div>
             </div>
