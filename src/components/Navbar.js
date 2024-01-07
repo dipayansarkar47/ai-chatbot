@@ -7,7 +7,7 @@ const Navbar = () => {
       <div className='flex flex-row justify-center items-center'>
 
         <RiChatVoiceFill className='h-10 text-4xl' />
-        <h2 className='text-3xl'>Robomatic.ai</h2>
+        <h2 className='text-3xl'>ChatGPT-4.AI</h2>
       </div>
       <a href="https://github.com/dipayansarkar47/ai-chatbot" className='ml-auto text-3xl flex justify-end items-center' target='_blank' rel='noreferrer'>
 

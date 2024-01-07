@@ -18,26 +18,20 @@ const Chat = () => {
     const [texttocopy, setTexttocopy] = useState("");
     // eslint-disable-next-line
     const [isCopied, setCopied] = useClipboard(texttocopy);
-    const encodedParams = new URLSearchParams();
-    encodedParams.set('in', inputText);
-    encodedParams.set('op', 'in');
-    encodedParams.set('cbot', '1');
-    encodedParams.set('SessionID', 'RapidAPI1');
-    encodedParams.set('cbid', '1');
-    encodedParams.set('key', 'RHMN5hnQ4wTYZBGCF3dfxzypt68rVP');
-    encodedParams.set('ChatSource', 'RapidAPI');
-    encodedParams.set('duration', '1');
+    
     const notify = () => toast("Text copied!");
     const options = {
         method: 'POST',
-        url: 'https://robomatic-ai.p.rapidapi.com/api',
+        url: 'https://chatgpt-gpt4-ai-chatbot.p.rapidapi.com/ask',
         headers: {
-            'content-type': 'application/x-www-form-urlencoded',
-            'X-RapidAPI-Key': '824dddee65msh76dbe040b14bfe4p12ab6ajsnc6532155d4f8',
-            'X-RapidAPI-Host': 'robomatic-ai.p.rapidapi.com'
+          'content-type': 'application/json',
+          'X-RapidAPI-Key': '824dddee65msh76dbe040b14bfe4p12ab6ajsnc6532155d4f8',
+          'X-RapidAPI-Host': 'chatgpt-gpt4-ai-chatbot.p.rapidapi.com'
         },
-        data: encodedParams,
-    };
+        data: {
+          query: inputText
+        }
+      };
 
 
 
@@ -60,8 +54,8 @@ const Chat = () => {
             const response = await axios.request(options);
             setInputText("");
             setTyping(false);
-            console.log(response.data.out);
-            setResponse(response.data.out);
+            console.log(response.data.response);
+            setResponse(response.data.response.startsWith('AI') ? response.data.response.substring(3) : response.data.response);
         } catch (error) {
             console.error(error);
         }
@@ -72,7 +66,7 @@ const Chat = () => {
             <div class="md:w-5/12 lg:inline md:inline hidden h-screen border-r-2 border-r-gray-700">
                 <div className='m-5 flex flex-row gap-1'>
                     <RiChatVoiceFill className='h-10 text-4xl' />
-                    <h2 className='text-3xl'>Robomatic.ai</h2>
+                    <h2 className='text-3xl'>ChatGPT-4.AI</h2>
                     <a href="https://github.com/dipayansarkar47/ai-chatbot" className='ml-auto text-3xl flex justify-end items-center' target='_blank' rel='noreferrer'>
 
                         <FaGithubSquare />
@@ -124,7 +118,7 @@ const Chat = () => {
                     </div>}
                 </div>
                 <div className="chatFooter mb-16 p-2 mx-2 w-11/12 bg-transparent rounded flex flex-col justify-center items-center mt-auto">
-                    <div className="flex flex-row gap-3 w-11/12 bg-transparent">
+                    <div className="flex flex-row gap-4 w-11/12 bg-transparent">
                         <form action="" className='flex flex-row w-full gap-2' onSubmit={handleSendRequest}>
 
                         <input
@@ -132,7 +126,7 @@ const Chat = () => {
                             type="text" placeholder='Type your query to me...' name="" id="" value={inputText} onChange={handleInputChange}
                              />
                         <button type='submit' >
-                            <IoSend className='text-2xl bg-transparent' />
+                            <IoSend className='text-3xl bg-transparent' />
                         </button>
                         </form>
                     </div>
