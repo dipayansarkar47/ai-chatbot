@@ -25,7 +25,7 @@ const Chat = () => {
         url: 'https://chatgpt-gpt4-ai-chatbot.p.rapidapi.com/ask',
         headers: {
           'content-type': 'application/json',
-          'X-RapidAPI-Key': '824dddee65msh76dbe040b14bfe4p12ab6ajsnc6532155d4f8',
+          'X-RapidAPI-Key': 'YOUR-API-KEY',
           'X-RapidAPI-Host': 'chatgpt-gpt4-ai-chatbot.p.rapidapi.com'
         },
         data: {
